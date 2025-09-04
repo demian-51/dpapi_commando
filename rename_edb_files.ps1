@@ -500,6 +500,30 @@ if ($confirmation -eq 'P' -or $confirmation -eq 'p') {
     exit
 }
 
+# Kill KakaoTalk.exe process before database operations (only in execute mode)
+if (-not $script:WhatIfMode) {
+    Write-Host ""
+    Write-Host "Terminating KakaoTalk.exe process..." -ForegroundColor Yellow
+    
+    $kakaoProcesses = Get-Process -Name "KakaoTalk" -ErrorAction SilentlyContinue
+    
+    if ($kakaoProcesses) {
+        try {
+            $kakaoProcesses | Stop-Process -Force -ErrorAction Stop
+            Write-Host "  ✓ KakaoTalk.exe process terminated successfully" -ForegroundColor Green
+            # Give a brief moment for process to fully terminate
+            Start-Sleep -Milliseconds 500
+        }
+        catch {
+            Write-Host "  ✗ Failed to terminate KakaoTalk.exe: $($_.Exception.Message)" -ForegroundColor Red
+            Write-Host "  Please close KakaoTalk manually and run the script again." -ForegroundColor Yellow
+            exit 1
+        }
+    } else {
+        Write-Host "  ✓ KakaoTalk.exe is not running" -ForegroundColor Green
+    }
+}
+
 Write-Host ""
 Write-Host ("=" * 50) -ForegroundColor Cyan
 Write-Host "Step 2: Processing database files..." -ForegroundColor Yellow
