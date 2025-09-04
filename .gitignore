@@ -1,0 +1,8 @@
+*.edb
+*.edb-wal
+*.edb-shm
+*.backup
+*.backup.new
+*.bin
+
+test/*
